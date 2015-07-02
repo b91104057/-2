@@ -1,0 +1,384 @@
+#include <iostream>
+#include <iomanip>
+using namespace std;
+
+
+
+//▅▅▅▅▅▅▅▅▅▅▅函數宣告▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅
+double Tax(int,int);
+int ConvertDate2Days(int, int);//計算1/1到某月日，共有幾天
+int CountDays(int,int,int,int);//計算M1/D1 到 M2/D2期間，共有幾天
+
+int Over_2400(int);
+
+//▅▅▅▅▅▅▅▅▅▅▅▅主函數▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅
+
+int main()
+{
+
+RESTART: //重玩從這開始
+
+int M1,M2,M3;
+int D1,D2,D3;
+
+int Year_Tax;
+int Year_Tax2;
+
+int yes_no;
+int Option;
+int cc;
+cout<<"************************************************************************"<<endl;
+cout<<"**0_以起迄日算稅 1_起課至停稅  2_變車種 3_大於2400免稅  4_停稅後再起課**"<<endl;
+cout<<"**5_算天數    6_281違牌滯納金部份免徵           7_聲明  8_Help        **"<<endl;
+cout<<"************************************************************************"<<endl;
+cout<<"請輸入想處理的類型.........》";
+cin>>Option;
+
+//▅▅▅▅▅▅▅▅▅▅▅▅▅▅零、期間稅額▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅
+if (Option==0)
+{
+ cout<<"請輸入全年稅額...."; cin>>Year_Tax;
+ 
+ RESTART_1:
+           
+ cout<<"請輸入課稅 起月...."; cin>> M1;
+ cout<<"請輸入課稅 起日...."; cin>> D1; 
+ 
+ MIDDLE:
+ 
+ cout<<"請輸入課稅 迄月...."; cin>> M2;
+ cout<<"請輸入課稅 迄日...."; cin>> D2; 
+ 
+ cout<<"▉▉▉▉▉▉▉ＡＮＳＷＥＲ▉▉▉▉▉▉▉"<<endl;
+ cout<<"從"<<M1<<"/"<<D1
+     <<"到"<<M2<<"/"<<D2
+     <<"有："<<CountDays(M1,D1,M2,D2)<<"天"<<endl<<endl; 
+          
+ cout<<"▉這段期間稅額是"<<Tax(CountDays(M1,D1,M2,D2),Year_Tax)<<endl<<endl;
+  cout<<"▉▉▉▉▉▉▉Ｅ   Ｎ   Ｄ▉▉▉▉▉▉▉"<<endl<<endl<<endl;
+ 
+ 
+ cout<<"輸入其它期間計算嗎？輸入0(不要)或1(要)或2(接續前一期間)...."<<endl;
+ cin>>yes_no;
+  if (yes_no == 0) 
+     goto RESTART;
+  else if (yes_no ==1)
+     goto RESTART_1;
+  else 
+  {
+  M1 = M2;D1=D2+1;
+  goto MIDDLE;    
+       
+  }
+     
+     
+
+
+}
+
+
+//▅▅▅▅▅▅▅▅▅▅▅▅▅▅起課後首次停稅的程序▅▅▅▅▅▅▅▅▅▅▅
+else if (Option==1)
+{
+ cout<<"請輸入全年稅額...."; cin>>Year_Tax;
+ cout<<"請輸入  起課月...."; cin>> M1;
+ cout<<"請輸入  起課日...."; cin>> D1; 
+ cout<<"請輸入  停稅月...."; cin>> M2;
+ cout<<"請輸入  停稅日...."; cin>> D2; 
+ 
+ cout<<"▉▉▉▉▉▉▉ＡＮＳＷＥＲ▉▉▉▉▉▉▉"<<endl;
+ cout<<"從"<<M1<<"/"<<D1
+     <<"到停稅前日"
+     <<"有"<<CountDays(M1,D1,M2,D2-1)<<"天"<<endl; 
+ cout<<"▉這段期間稅額是"<<Tax(CountDays(M1,D1,M2,D2-1),Year_Tax)<<endl<<endl;
+ 
+ cout<<"從"<<M2<<"/"<<D2
+     <<"到12/31有"<<CountDays(M2,D2,12,31)<<"天"<<endl; 
+ cout<<"▉<<停稅期間稅額>>是"<<Tax(CountDays(M2,D2,12,31),Year_Tax)<<endl<<endl;
+ 
+ cout<<"▉起課日納稅▉"<<Tax(CountDays(M1,D1,M2,D2-1),Year_Tax)+Tax(CountDays(M2,D2,12,31),Year_Tax)<<endl<<endl;
+ cout<<"▉退     稅 ▉退停稅日至年底，要退"<<Tax(CountDays(M2,D2,12,31),Year_Tax)<<endl<<endl;
+
+ cout<<"▉▉▉▉▉▉▉Ｅ   Ｎ   Ｄ▉▉▉▉▉▉▉"<<endl;
+  goto RESTART;
+}
+//▅▅▅▅▅▅▅▅▅▅▅▅▅起課日後，首次變更車種▅▅▅▅▅▅▅▅▅▅▅▅
+else if (Option==2)
+{
+ cout<<"請輸入變更車種前，車種全年稅額...."; cin>>Year_Tax;
+ cout<<"請輸入變更車種後，車種全年稅額...."; cin>>Year_Tax2;
+ cout<<"請輸入起課月...."; cin>> M1;
+ cout<<"請輸入起課日...."; cin>> D1; 
+ cout<<"請輸入異動月...."; cin>> M2;
+ cout<<"請輸入異動日...."; cin>> D2; 
+ 
+ 
+ cout<<"▉▉▉▉▉▉▉ＡＮＳＷＥＲ▉▉▉▉▉▉▉"<<endl;
+ cout<<"從"<<M1<<"/"<<D1
+     <<"到異動前日"
+     <<"有"<<CountDays(M1,D1,M2,D2-1)<<"天"<<endl; 
+ cout<<"▉這段期間稅額是"<<Tax(CountDays(M1,D1,M2,D2-1),Year_Tax)<<endl<<endl;
+ 
+ cout<<"從"<<M2<<"/"<<D2
+     <<"到12/31有"<<CountDays(M2,D2,12,31)<<"天"<<endl; 
+ cout<<"▉這段期間稅額是"<<Tax(CountDays(M2,D2,12,31),Year_Tax2)<<endl<<endl;
+ 
+ cout<<"▉起課日納稅▉"<<Tax(CountDays(M1,D1,12,31),Year_Tax)<<endl;
+ cout<<"▉退      稅▉起課日所繳稅額，於變更日，應補應退差額(正補負退)："
+     <<-(Tax(CountDays(M2,D2,12,31),Year_Tax) - Tax(CountDays(M2,D2,12,31),Year_Tax2))<<endl<<endl;
+ 
+ cout<<"▉▉▉▉▉▉▉Ｅ   Ｎ   Ｄ▉▉▉▉▉▉▉"<<endl;     
+  goto RESTART;
+     
+} 
+
+//▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅起課後，超過2400的免稅▅▅▅▅▅▅▅▅▅▅
+else if (Option==3)
+{
+
+ Correction:
+ cout<<"請輸入cc數(請輸入大於2400的值)...."; cin>>cc;
+  
+ if (cc<=2400){goto Correction;}
+ Year_Tax = 11230 + Over_2400(cc);
+ cout<<"    這個級距，年度    稅額為"<<Year_Tax<<endl;
+ cout<<"    這個級距，年度應補差額為"<<Over_2400(cc)<<endl<<endl;
+ cout<<"請輸入起課月...."; cin>> M1;
+ cout<<"請輸入起課日...."; cin>> D1; 
+ cout<<"請輸入核免月...."; cin>> M2;
+ cout<<"請輸入核免日...."; cin>> D2;  
+ 
+ cout<<"▉▉▉▉▉▉▉ＡＮＳＷＥＲ▉▉▉▉▉▉▉"<<endl;
+ 
+
+     
+//標題列----------------
+cout<<setw(20)<<M1<<"/"<<D1<<"至免稅前1日"
+    <<setw(5)<<M2<<"/"<<D2<<"至12月31日"<<endl;
+
+//日數列----------------
+cout<<setw(25)<<CountDays(M1,D1,M2,D2-1)<<"天"
+    <<setw(17)<<CountDays(M2,D2,12,31)<<"天"<<endl;
+
+//第3列-----------------
+cout<<setw(10)<<"11230"
+    <<setw(12)<<"甲"<<Tax(CountDays(M1,D1,M2,D2-1),11230)
+    <<setw(12)<<"乙"<<Tax(CountDays(M2,D2,12,31),11230)<<endl;
+    
+//第4列-----------------
+    
+cout<<setw(10)<<Over_2400(cc)
+    <<setw(12)<<"丙"<<Tax(CountDays(M1,D1,M2,D2-1),Over_2400(cc))
+    <<setw(12)<<"丁"<<Tax(CountDays(M2,D2,12,31),Over_2400(cc))<<endl<<endl;
+   
+ cout<<"▉起課日納稅▉"<<Tax(CountDays(M1,D1,12,31),Year_Tax)<<endl;
+ cout<<"▉退      稅▉起課日所繳稅額，於免稅日，應補應退差額(正補負退)："    
+     <<"乙"<<Tax(CountDays(M2,D2,12,31),11230)<<endl<<endl;   
+  
+
+ cout<<"▉▉▉▉▉▉▉Ｅ   Ｎ   Ｄ▉▉▉▉▉▉▉"<<endl;
+  goto RESTART;
+  
+}
+
+
+//▅▅▅▅▅▅▅▅▅▅▅停稅又再起課(含再起課兼變車種)▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅
+else if (Option==4)
+{
+ cout<<"請輸入起課時車種稅額...."; cin>>Year_Tax;
+ cout<<"請輸入 再次起課時 車種稅額...."; cin>>Year_Tax2;
+ cout<<"請輸入 首次起課月...."; cin>> M1;
+ cout<<"請輸入 首次起課日...."; cin>> D1; 
+ cout<<"請輸入 停稅月...."; cin>> M2;
+ cout<<"請輸入 停稅日...."; cin>> D2; 
+ cout<<"請輸入 再次起課月...."; cin>> M3;
+ cout<<"請輸入 再次起課日...."; cin>> D3;  
+ 
+ 
+ cout<<"▉▉▉▉▉▉▉ＡＮＳＷＥＲ▉▉▉▉▉▉▉"<<endl;
+  
+ //標題列----------------
+cout<<setw(10)<<M1<<"/"<<D1<<"至停稅前1日"
+    <<setw(5) <<M2<<"/"<<D2<<"至 再起課前1日"
+    <<setw(5) <<M3<<"/"<<D3<<"至12/31"<<endl;
+
+//日數列----------------
+cout<<setw(15)<<CountDays(M1,D1,M2,D2-1)<<"天"
+    <<setw(15)<<CountDays(M2,D2,M3,D3-1)<<"天"
+    <<setw(20)<<CountDays(M3,D3,12,31)<<"天"<<endl;
+    
+//第3列-----------------
+cout<<setw(6)<<Year_Tax
+    <<setw(10)<<"甲"<<Tax(CountDays(M1,D1,M2,D2-1),Year_Tax)
+    <<setw(10)<<"乙"<<Tax(CountDays(M2,D2,M3,D3-1),Year_Tax)
+    <<setw(10)<<"丙"<<Tax(CountDays(M3,D3,12,31),Year_Tax)<<endl;
+    
+//第4列-----------------
+
+cout<<setw(6)<<0
+    <<setw(10)<<"丁"<<"000000"
+    <<setw(10)<<"戊"<<"000000"
+    <<setw(10)<<"己"<<"000000"<<endl;
+    
+//第5列-----------------    
+cout<<setw(6)<<Year_Tax2
+    <<setw(10)<<"庚"<<Tax(CountDays(M1,D1,M2,D2-1),Year_Tax2)
+    <<setw(10)<<"辛"<<Tax(CountDays(M2,D2,M3,D3-1),Year_Tax2)
+    <<setw(10)<<"壬"<<Tax(CountDays(M3,D3,12,31),Year_Tax2)<<endl;
+   
+ cout<<"▉起課日  納稅▉"<<Tax(CountDays(M1,D1,12,31),Year_Tax)<<endl;
+ cout<<"▉退       稅 ▉起課日所繳稅額，於停稅日，應退："    
+     <<"乙+丙"<<Tax(CountDays(M2,D2,12,31),Year_Tax)<<endl;   
+ cout<<"▉再起課後應納▉再起課後，全年期應納稅額"    
+     <<"甲+壬"<<Tax(CountDays(M1,D1,M2,D2-1),Year_Tax)+Tax(CountDays(M3,D3,12,31),Year_Tax2)<<endl<<endl;    
+ 
+
+ cout<<"▉▉▉▉▉▉▉Ｅ   Ｎ   Ｄ▉▉▉▉▉▉▉"<<endl;
+  goto RESTART;
+}
+
+//▅▅▅▅▅▅▅▅▅▅▅▅▅▅help▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅
+else if (Option==8)
+{
+
+cout<<"類型0：輸入：課稅起日、迄  日，輸出稅額"<<endl;
+cout<<"類型1：輸入：課稅起日、停稅日。停稅原因如停駛、繳銷、註銷、2400cc以下核"<<endl<<
+       "      免，輸出應納應退"<<endl;
+cout<<"類型2：輸入：課稅起日、車種異動日、異動前後稅額，輸出稅額"<<endl;
+cout<<"類型3：大於2400cc的免稅"<<endl;
+cout<<"類型4：起課日後，先負異動又正異動"<<endl;
+cout<<"類型5：輸入期間，計算日數"<<endl;
+cout<<"類型6：281僅部份免徵滯納金"<<endl;
+
+cout<<endl<<endl;
+
+ goto RESTART;
+
+}
+
+
+//▅▅▅▅▅▅▅▅▅▅▅▅▅算天數▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅
+else if (Option==5)
+{
+ cout<<"請輸入 起月...."; cin>> M1;
+ cout<<"請輸入 起日...."; cin>> D1; 
+ cout<<"請輸入 迄月...."; cin>> M2;
+ cout<<"請輸入 迄日...."; cin>> D2; 
+ 
+ cout<<"▉▉▉▉▉▉▉ＡＮＳＷＥＲ▉▉▉▉▉▉▉"<<endl;
+ cout<<"從"<<M1<<"/"<<D1
+     <<"到"<<M2<<"/"<<D2
+     <<"有："<<CountDays(M1,D1,M2,D2)<<"天"<<endl<<endl; 
+ cout<<"▉▉▉▉▉▉▉Ｅ   Ｎ   Ｄ▉▉▉▉▉▉▉"<<endl<<endl<<endl;
+ goto RESTART;
+
+
+}
+
+
+//▅▅▅▅▅▅▅▅▅▅▅▅▅Announcement▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅
+else if (Option==7)
+{
+     
+  cout<<"▉▉▉▉▉▉▉ＡＮＳＷＥＲ▉▉▉▉▉▉▉"<<endl;    
+ cout<<"本程式不保證稅額計算正確。僅供測試用，歡迎提出程式的bug。"<<endl;
+ cout<<"本程式之日期計算，以2015年為准，2015年非閏年，2月僅28日。"<<endl;
+
+ 
+  cout<<"▉▉▉▉▉▉▉Ｅ   Ｎ   Ｄ▉▉▉▉▉▉▉"<<endl<<endl<<endl;
+ 
+  goto RESTART;
+ 
+}
+
+
+
+//▅▅▅▅▅▅▅▅▅▅▅▅▅281部份滯納金免徵▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅
+else if (Option==6)
+{
+
+ int paid;
+ cout<<"全年本稅為......";
+ cin>>Year_Tax;
+ 
+ cout<<"違牌日前，總共繳了多少錢......";
+ cin>>paid;
+ 
+     
+cout<<"▉▉▉▉▉▉▉ＡＮＳＷＥＲ▉▉▉▉▉▉▉"<<endl;    
+
+ cout<<"全年本稅為......"<< Year_Tax<<endl;
+ cout<<"全年本稅 * 0.15 = "<<Year_Tax * 0.15<<endl;
+ cout<<"徵收滯納金部份，即：已繳稅額 * 0.15 = "<<paid * 0.15<<endl;
+ cout<<"免徵滯納金部份，即：未繳稅額 * 0.15 = "<<(Year_Tax - paid) * 0.15<<endl;
+ 
+ 
+cout<<"▉▉▉▉▉▉▉Ｅ   Ｎ   Ｄ▉▉▉▉▉▉▉"<<endl<<endl<<endl;
+ 
+  goto RESTART;
+ 
+}
+
+
+
+
+
+
+//▅▅▅▅▅▅▅▅▅▅▅▅▅重玩選項▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅
+ 
+    cout<<endl;
+    cout <<"還要玩嗎??..輸入0或1"<<endl;
+  cin>>yes_no;
+  if (yes_no == 0 || yes_no == 1) 
+     goto RESTART;
+  else
+    system("PAUSE");
+    return 0;   
+}
+
+
+//▅▅▅▅▅▅▅▅▅▅函數：輸入日期，輸出1/1至該日天數▅▅▅▅▅▅▅▅▅▅▅
+
+int ConvertDate2Days(int x, int y)
+{
+	int YearMonth[13] = {0,31,28,31,30,31,30,31,31,30,31,30,31};
+	int SumDays = 0;
+	for (int count = 0; count <x; count++)
+	{
+		SumDays = SumDays + YearMonth[count];//Month2Days 是x月，月份的日數。
+	}
+		return SumDays+y;	
+}
+//▅▅▅▅▅▅▅▅▅-函數：輸入2個日期，輸出2個日期含頭尾的天數▅▅▅▅▅▅▅▅
+int CountDays(int x,int y,int z,int w)
+{
+    int Duration_1 = ConvertDate2Days(x,y);               // 1/1至x/y有幾天
+    int Duration_2 = ConvertDate2Days(z,w);               // 1/1至z/w有幾天
+    int Duration   = Duration_2 - Duration_1 + 1;         // x/y至z/w有幾天 
+    return Duration;
+    
+}    
+
+//-▅▅▅▅▅▅▅▅▅▅▅函數：稅額計算▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅
+double Tax(int Days, int TaxRate)
+{
+ double Tax = Days * (TaxRate/365.0);
+ return Tax;       
+}
+
+//▅▅▅▅▅▅▅▅▅▅函數：輸入免稅車cc數，輸出應補差額▅▅▅▅▅▅▅▅▅▅
+int Over_2400(int x)
+{
+    int CC_Range[6] = {2400,3000,4200,5400,6600,7800};  //各級距cc數
+    int Tax_Minus[6] = {3980,16990,34940,58460,105770,139970};  //各級距應補差額
+    int Money=3980; //差額
+    
+    if (x>7800) {return 139970;}
+    
+    else
+    {
+     for (int i = 0; !(CC_Range[i]<x && x<=CC_Range[i+1]) ; i++){Money = Tax_Minus[i+1];}
+     return Money;
+    }
+}
+
